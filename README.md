@@ -1,8 +1,28 @@
-This is a [fork](https://en.wikipedia.org/wiki/Fork_(software_development)) (i.e., a copy with changes) of the QuickSmelt plugin on uMod.
+This is a [fork](https://en.wikipedia.org/wiki/Fork_(software_development)) (i.e., a copy with changes) of [WheteThunger's QuickSmelt fork](https://github.com/WheteThunger/QuickSmelt), which is itself a fork of the QuickSmelt plugin on uMod.
 
 https://umod.org/plugins/quick-smelt
 
-## Differences from uMod version
+Original authors: misticos (uMod) and WhiteThunder (fork). All credit for the plugin goes to them.
+
+## Changes in this fork
+
+This fork adds one compatibility fix on top of WheteThunger's version 5.1.16:
+
+- **Fixed compile error on Rust builds that removed `ItemModCookable.CanBeCookedByAtTemperature`.** Some recent Rust builds removed this method, which caused the plugin to fail to compile with:
+
+  ```
+  'ItemModCookable' does not contain a definition for 'CanBeCookedByAtTemperature' [CS1061]
+  ```
+
+  The direct call was replaced with a `CanCookAt` helper that:
+  - Calls `CanBeCookedByAtTemperature` at runtime if it exists, so behavior is unchanged on Rust builds that still have it
+  - Otherwise falls back to the cookable's `lowTemp` / `highTemp` fields
+  - Allows cooking if neither is found, instead of throwing an error
+  - Caches the lookup after the first call, so there is no per-tick cost
+
+No other behavior or config changes were made.
+
+## Differences from uMod version (from WheteThunger's fork)
 
 - Smelting/cooking animations are actually accurate
 - Smelting/cooking multiple items at once does not increase efficiency (like vanilla)
@@ -21,7 +41,9 @@ If you have a question not listed here, please check the open/closed issues on t
 
 #### Why do I get a compilation error?
 
-You may have downloaded the plugin file wrong. Try viewing the cs file in **raw** format (click [here](https://raw.githubusercontent.com/WheteThunger/QuickSmelt/master/QuickSmelt.cs)), then save that as QuickSmelt.cs.
+If the error mentions `CanBeCookedByAtTemperature`, you are using a version without the fix in this fork. Use the `QuickSmelt.cs` from this repo.
+
+Otherwise, you may have downloaded the plugin file wrong. Try viewing the cs file in **raw** format on GitHub, then save that as QuickSmelt.cs.
 
 #### Do I need to reset my config to use this fork?
 
@@ -33,7 +55,7 @@ It probably is working, and you just don't realize. Adjusting smelting speed doe
 
 #### Can I suggest new features?
 
-I am not planning to add any new features at this time, but feel free to report bugs.
+This fork only exists to keep the plugin compiling on newer Rust builds. Feature requests should go to the [original fork](https://github.com/WheteThunger/QuickSmelt), but feel free to report bugs related to the compatibility fix here.
 
 #### How can I speed up industrial conveyors to keep up with the fast smelting speed and high stack sizes?
 
@@ -41,7 +63,7 @@ Try using the Conveyor Stacks plugin and/or adjusting conveyor ConVars.
 
 #### When will this be available on uMod?
 
-I will try to contribute some of these fixes to the uMod version when I have time.
+The original fork's author plans to contribute some fixes to the uMod version. The compatibility fix in this fork may be offered upstream as well.
 
 ## Furnace short names
 
